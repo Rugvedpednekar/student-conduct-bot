@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>UHart Conduct Q&A</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+  <style>
+    :root{
+      --uhart-red:#c8102e; --uhart-red-dark:#a50d26; --uhart-gray:#f6f6f6; --text:#1f2328;
+      --bubble:#ffffff; --bot:#fbfbfb; --chip:#f0f0f0; --accent:#0b7; --warn:#e11d48;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;
+      color:var(--text); background:#fff;
+      display:flex; min-height:100svh; flex-direction:column;
+    }
+    header{
+      background:var(--uhart-red); color:#fff; padding:16px 20px;
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    header .title{font-size:20px; font-weight:700; letter-spacing:.2px}
+    header .pill{
+      background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35);
+      padding:4px 10px; border-radius:999px; font-size:12px
+    }
+    .emergency{
+      background:#fff0f3; color:#7f0a22; border-top:1px solid #ffd6de; border-bottom:1px solid #ffd6de;
+      padding:10px 16px; font-size:14px; display:flex; gap:10px; align-items:center
+    }
+    .emergency strong{color:var(--warn)}
+    main{width:100%; max-width:900px; margin:12px auto; flex:1; display:flex; gap:14px; padding:0 12px}
+    .chat{
+      background:var(--uhart-gray); border:1px solid #eee; border-radius:16px; flex:1;
+      display:flex; flex-direction:column; overflow:hidden; min-height:65svh;
+    }
+    .messages{
+      padding:18px; overflow:auto; display:flex; flex-direction:column; gap:12px;
+      scroll-behavior:smooth;
+    }
+    .msg{
+      display:flex; gap:10px; align-items:flex-start; max-width:92%;
+    }
+    .msg.user{align-self:flex-end; flex-direction:row-reverse}
+    .avatar{
+      width:32px; height:32px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-weight:700;
+      border:1px solid #e5e5e5
+    }
+    .avatar.bot{background:#ffe6ea; color:#7f0a22; border-color:#ffd6de}
+    .bubble{
+      background:var(--bubble); padding:12px 14px; border-radius:14px; border:1px solid #eee; line-height:1.35;
+      box-shadow:0 1px 0 rgba(0,0,0,.03)
+    }
+    .msg.bot .bubble{background:var(--bot)}
+    .meta{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+    .chip{
+      background:var(--chip); border:1px solid #e6e6e6; padding:4px 8px; border-radius:999px; font-size:12px;
+    }
+    .typer{display:inline-flex; gap:4px; padding:2px 0}
+    .dot{width:6px; height:6px; border-radius:50%; background:#bbb; animation:blink 1.2s infinite}
+    .dot:nth-child(2){animation-delay:.2s}
+    .dot:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+    .composer{display:flex; gap:10px; padding:12px; border-top:1px solid #eee; background:#fff}
+    .composer input{
+      flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:12px; font-size:15px; outline:none
+    }
+    .composer button{
+      background:var(--uhart-red); color:#fff; border:none; padding:12px 16px; border-radius:12px; font-weight:600; cursor:pointer
+    }
+    .composer button:hover{background:var(--uhart-red-dark)}
+    .suggest{
+      padding:12px 12px 0; display:flex; flex-wrap:wrap; gap:8px; background:#fff; border-top:1px solid #eee
+    }
+    .suggest .chip{cursor:pointer}
+    .sidebar{
+      width:260px; border:1px solid #eee; border-radius:16px; padding:14px; height:max-content; position:sticky; top:12px
+    }
+    .small{font-size:12px; color:#6b7280}
+    @media (max-width:960px){main{flex-direction:column}.sidebar{width:100%; order:-1}}
+    a, a:visited{color:var(--uhart-red-dark); text-decoration:none}
+    a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">UHart Conduct Q&A (Gemini)</div>
+    <div id="status" class="pill">Checking status…</div>
+  </header>
+
+  <div class="emergency">
+    <span>🚨</span>
+    <div>
+      <strong>Not for emergencies.</strong> If you or someone else is in danger or needs urgent help,
+      call Public Safety at <a href="tel:8607687777">860-768-7777</a> or 911.
+    </div>
+  </div>
+
+  <main>
+    <section class="chat" aria-label="Chat conversation">
+      <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+      <div class="suggest" id="suggest">
+        <div class="chip" data-q="What is the guest policy in residence halls?">Guest policy</div>
+        <div class="chip" data-q="What does the Good Samaritan policy say about seeking medical help?">Good Samaritan</div>
+        <div class="chip" data-q="How do academic integrity violations get addressed?">Academic integrity</div>
+        <div class="chip" data-q="Can I host an event on campus and what are the rules?">Hosting events</div>
+      </div>
+
+      <div class="composer">
+        <input id="q" type="text" placeholder="Ask about the Student Handbook…" autocomplete="off" />
+        <button id="send">Send</button>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <h3 style="margin:6px 0 8px;">About</h3>
+      <p class="small">This assistant answers using the official UHart Student Handbook. Responses include page citations. For case-specific questions, please contact <a href="mailto:stconduct@hartford.edu">stconduct@hartford.edu</a>.</p>
+      <p class="small">Tip: Press <strong>Enter</strong> to send. Use the chips for common topics.</p>
+      <p class="small">Made with FastAPI + Gemini + a lightweight local vector index.</p>
+    </aside>
+  </main>
+
+  <script src="./widget.js"></script>
+</body>
+</html>
