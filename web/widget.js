@@ -1,5 +1,5 @@
 // === Basic settings ===
-const API_BASE = "http://127.0.0.1:8000"; // change if you deploy
+const API_BASE = "https://uhart-conduct-bot.onrender.com";  
 const messagesEl = document.getElementById("messages");
 const inputEl = document.getElementById("q");
 const sendBtn = document.getElementById("send");
@@ -118,3 +118,4 @@ suggestEl.addEventListener("click", (e)=>{
 
 // Welcome + first hint
 addMessage("Hi! I can answer questions about the UHart Student Handbook and cite the exact page. How can I help today?");
+
