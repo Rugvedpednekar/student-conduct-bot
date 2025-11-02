@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: uhart-conduct-bot
+    env: python
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -m app.ingest
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: HANDBOOK_URL
+        value: https://www.hartford.edu/current-students/_files/6.5_current_students_student_handbook.pdf
+      - key: USE_GEMINI_EMBEDS
+        value: "True"
+      - key: USE_GEMINI_LLM
+        value: "True"
